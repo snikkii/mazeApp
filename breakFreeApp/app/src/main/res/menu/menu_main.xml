@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.breakfree.MainActivity">
+
+    <item
+        android:id="@+id/settings"
+        android:orderInCategory="1"
+        android:title="@string/menuItem1"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/about"
+        android:orderInCategory="2"
+        android:title="@string/menuItem2"
+        app:showAsAction="never"/>
+</menu>

@@ -1,0 +1,79 @@
+<resources>
+    <!--<string name="app_name">break free</string>
+    <string name="highscoreScreen_name">highscore</string>
+
+    <string name="menuItem1">Settings</string>
+    <string name="menuItem2">About</string>
+
+    <string name="saveSettings">save</string>
+
+    <string name="audioText"></string>
+    <string name="mazeText"></string>
+    <string name="nameText"></string>
+
+    <string name="aRadio1"></string>
+    <string name="aRadio2"></string>
+
+    <string name="mRadio1"></string>
+    <string name="mRadio2"></string>
+    <string name="mRadio3"></string>
+    <string name="mRadio4"></string>
+    <string name="mRadio5"></string>
+    <string name="mRadio6"></string>
+
+    <string name="startGame">Start game</string>
+
+    <string name="timerText">00:00</string>
+
+    <string name="dataSetVal"></string>
+
+    <string name="highscoreInfoText">Here you can see a list of the player who made a maze
+        in the shortest amount of time!</string>
+
+    <string name="audioOffText"></string>
+    <string name="audioOnText"></string>
+
+    <string name="raspberryIP">192.168.178.36</string>
+    <string name="raspberrySwitchText">Ball is moved with smartphone</string>
+    <string name="audioSwitchText">Sound is on</string>
+
+    <string name="ipAddressText"></string>
+    <string name="isConnected"></string>-->
+
+
+    <string name="app_name">break free</string>
+    <string name="highscoreScreen_name">highscore</string>
+
+    <string name="defaultUser">player 1</string>
+    <string name="defaultMaze">maze_1.txt</string>
+
+    <string name="menuItem1">Settings</string>
+    <string name="menuItem2">About</string>
+    <string name="menuItem3">Delete highscore list</string>
+
+    <string name="audioText">Change game sound:</string>
+    <string name="mazeText">Select your maze:</string>
+    <string name="nameText">Change your name:</string>
+    <string name="ipAddressText">Enter ip-adress of your raspberry pi:</string>
+    <string name="aRadio1">Sound 1</string>
+    <string name="aRadio2">Sound 2</string>
+    <string name="mRadio1">Maze 1</string>
+    <string name="mRadio2">Maze 2</string>
+    <string name="mRadio3">Maze 3</string>
+    <string name="mRadio4">Maze 4</string>
+    <string name="mRadio5">Maze 5</string>
+    <string name="mRadio6">Maze 6</string>
+    <string name="raspberryIP">192.168.178.36</string>
+    <string name="raspberrySwitchTextOff">Ball is moved with smartphone</string>
+    <string name="raspberrySwitchTextOn">Ball is moved with raspberry pi</string>
+    <string name="audioSwitchTextOff">Sound is off</string>
+    <string name="audioSwitchTextOn">Sound is on</string>
+
+    <string name="startGame">Start game</string>
+    <string name="timerText">00:00</string>
+    <string name="saveSettings">save</string>
+
+    <string name="emptyString"> </string>
+
+    <string name="highscore"></string>
+</resources>
