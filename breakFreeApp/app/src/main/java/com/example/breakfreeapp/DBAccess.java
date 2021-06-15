@@ -38,7 +38,6 @@ public class DBAccess extends SQLiteOpenHelper {
         db = this.getWritableDatabase();
         onCreate(db);
         this.table = dbName.replace(".dat", "");
-        //onUpgrade(db, 0, 1);
     }
 
     /** Identifies the table
@@ -51,7 +50,7 @@ public class DBAccess extends SQLiteOpenHelper {
         while(tokenizer.hasMoreTokens()){
             String token = tokenizer.nextToken();
 
-            if(token.equals("TABLE")){
+            if(token.equals("EXISTS")){
                 table = tokenizer.nextToken();
                 break;
             }
