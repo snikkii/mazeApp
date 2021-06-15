@@ -2,6 +2,7 @@ package com.example.breakfreeapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -94,6 +95,13 @@ public class highscoreActivity extends AppCompatActivity {
         });
 
         highscoreList.setAdapter(adapter);
+
+        //get information about how game was played (by smartphone or by raspberry)
+        SharedPreferences sh = getSharedPreferences("game settings", MODE_PRIVATE);
+        raspberryOn = sh.getString("raspberryOff", "false");
+        if(raspberryOn.equals("true")){
+            raspberryOn = "false";
+        }
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             //get information from just played game
@@ -102,31 +110,20 @@ public class highscoreActivity extends AppCompatActivity {
             String dbMaze = extras.getString("dbMaze");
             String dbAudio = extras.getString("dbAudio");
             String audioOn = extras.getString("isAudioOn");
-            raspberryOn = extras.getString("turnRaspberrySwitchOff");
             dbMaze = dbMaze.replace(".txt", "");
             dbMaze = dbMaze.replace("_", " ");
             dbMaze = dbMaze.replace("m", "M");
-            if(raspberryOn.equals("true")){
-                raspberryOn = "false";
-            }
             //if the audio-switch is neither true or false turn audio off
             if(TextUtils.isEmpty(audioOn)){ audioOn = "false"; }
-            if(TextUtils.isEmpty(dbName) || TextUtils.isEmpty(dbMaze)){
-                Intent intent = new Intent(highscoreActivity.this, MainActivity.class);
-                intent.putExtra("raspberrySwitchIsOff", raspberryOn);
-                startActivity(intent);
-                finish();
-            } else {
-                //insert new dataset and play sound based on the users decision
-                newInsert = true;
-                DataSet dataSet = new DataSet(dbName, dbTime, dbMaze);
-                currentPlayerID  = dbAccess.insertDataSet(dataSet);
-                updateView();
-                    if(dbAudio.equals("Sound 2") && audioOn.equals("true")){
-                        sound2.start();
-                    } else if(dbAudio.equals("Sound 1") && audioOn.equals("true")){
-                        sound1.start();
-                    }
+            //insert new dataset and play sound based on the users decision
+            newInsert = true;
+            DataSet dataSet = new DataSet(dbName, dbTime, dbMaze);
+            currentPlayerID  = dbAccess.insertDataSet(dataSet);
+            updateView();
+            if(dbAudio.equals("Sound 2") && audioOn.equals("true")){
+                sound2.start();
+            } else if(dbAudio.equals("Sound 1") && audioOn.equals("true")){
+                sound1.start();
             }
         } else {
             updateView();
@@ -154,8 +151,11 @@ public class highscoreActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch(id){
             case R.id.home:
+                SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("raspberryOff", raspberryOn);
+                editor.apply();
                 Intent intent = new Intent(highscoreActivity.this, MainActivity.class);
-                intent.putExtra("raspberrySwitchIsOff", raspberryOn);
                 startActivity(intent);
                 finish();
                 return true;
@@ -169,14 +169,6 @@ public class highscoreActivity extends AppCompatActivity {
                 toast.show();
                 startActivity(in);
                 finish();
-        }
-
-        if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(highscoreActivity.this, MainActivity.class);
-            intent.putExtra("raspberrySwitchIsOff", raspberryOn);
-            startActivity(intent);
-            finish();
-            return true;
         }
         return super.onOptionsItemSelected(item);
 

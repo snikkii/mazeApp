@@ -99,35 +99,23 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //get broker-ip from settings
-        SharedPreferences sh = getSharedPreferences("IP-Address broker", MODE_PRIVATE);
+        //get settings from SharedPreferences
+        SharedPreferences sh = getSharedPreferences("game settings", MODE_PRIVATE);
         BROKER = sh.getString("broker", "192.168.178.36");
-
-        //get other settings and set parameters if settings don't send some
-        Bundle extras = getIntent().getExtras();
-        if(extras != null){
-            userAudio = extras.getString("changesAudio");
-            userName = extras.getString("changesName");
-            userMaze = extras.getString("changesMaze");
-
-            String raspberrySwitchBuffer = extras.getString("changesRaspberrySwitch");
-            if(TextUtils.isEmpty(raspberrySwitchBuffer) || raspberrySwitchBuffer.equals("false")) {
-                raspberrySwitchOn = false;
-            } else if (raspberrySwitchBuffer.equals("true")){
-                raspberrySwitchOn = true;
-            }
-            String audioSwitchBuffer = extras.getString("changesAudioSwitch");
-            if(TextUtils.isEmpty(audioSwitchBuffer) || audioSwitchBuffer.equals("false")){
-                audioSwitchOn = false;
-            } else if(audioSwitchBuffer.equals("true")){
-                audioSwitchOn = true;
-            }
-        } else { //when App is started first
-            userAudio = getResources().getString(R.string.aRadio1);
-            userName = getResources().getString(R.string.defaultUser);
-            userMaze = getResources().getString(R.string.defaultMaze);
-            raspberrySwitchOn = false;
+        userAudio = sh.getString("userAudio", "Sound 1");
+        userName = sh.getString("userName", "player 1");
+        userMaze = sh.getString("userMaze", "maze_1.txt");
+        String audioSwitchBuffer = sh.getString("audioOn", "true");
+        if(audioSwitchBuffer.equals("false")){
+            audioSwitchOn = false;
+        } else if(audioSwitchBuffer.equals("true")){
             audioSwitchOn = true;
+        }
+        String raspberrySwitchBuffer = sh.getString("raspberryOff", "false");
+        if(raspberrySwitchBuffer.equals("false")) {
+            raspberrySwitchOn = false;
+        } else if (raspberrySwitchBuffer.equals("true")){
+            raspberrySwitchOn = true;
         }
 
         //button for highscore-list
@@ -225,12 +213,15 @@ public class MainActivity extends AppCompatActivity {
                     if (!aboutAlert){
                         drawBall.gameOver = false;
                         drawBall.isWinner = false;
-
-                        //
                         if(!raspberrySwitchOn){
                             mSensorManager.registerListener(mBallListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                                     SensorManager.SENSOR_DELAY_NORMAL);
                         }
+                        //store information in SharedPreferences
+                        SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("raspberryOff", String.valueOf(raspberrySwitchOn));
+                        editor.apply();
                         Intent intent = new Intent(MainActivity.this, highscoreActivity.class);
                         intent.putExtra("dbName", userName);
                         intent.putExtra("dbTime", userTime);
@@ -277,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
             drawMaze.invalidate();
         }
         catch (IOException e) {
-            Log.e("TAG", "Problem with opening file!"); //TODO: Tagname!
+            Log.e(TAG, "Problem with opening file!");
         }
         finally {
             if (reader != null){
@@ -285,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                     reader.close();
                 }
                 catch (IOException e){
-                    Log.e("TAG", "Problem with closing file!"); //TODO: Tagname!
+                    Log.e(TAG, "Problem with closing file!");
                 }
             }
         }
@@ -312,26 +303,18 @@ public class MainActivity extends AppCompatActivity {
         switch(id){
             case R.id.settings: //go to game-settings
                 startNewGame();
-                SharedPreferences sharedPreferences = getSharedPreferences("IP-Address broker", MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("broker", BROKER);
+                editor.putString("userAudio", userAudio);
+                editor.putString("userName", userName);
+                editor.putString("userMaze", userMaze);
+                editor.putString("audioOn", String.valueOf(audioSwitchOn));
+                editor.putString("raspberryOff", String.valueOf(raspberrySwitchOn));
                 editor.apply();
                 Intent intent = new Intent(MainActivity.this, menuActivity.class);
-                if(!TextUtils.isEmpty(userName)){
-                    intent.putExtra("nameOfUser", userName);
-                }
-                if(!TextUtils.isEmpty(userMaze)){
-                    intent.putExtra("mazeOfUser", userMaze);
-                }
-                if(!TextUtils.isEmpty(userAudio)){
-                    intent.putExtra("audioOfUser", userAudio);
-                }
-                if(!TextUtils.isEmpty(BROKER)){
-                    intent.putExtra("broker", BROKER);
-                }
-                intent.putExtra("RaspberrySwitchOnOff", String.valueOf(raspberrySwitchOn));
-                intent.putExtra("AudioSwitchOnOff", String.valueOf(audioSwitchOn));
                 startActivity(intent);
+
                 return true;
             case R.id.about: //go to alert-box which shows some information
                 aboutAlert = true;
@@ -389,13 +372,16 @@ public class MainActivity extends AppCompatActivity {
                     mSensorManager.registerListener(mBallListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                             SensorManager.SENSOR_DELAY_NORMAL);
                 }
+                SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("raspberryOff", String.valueOf(raspberrySwitchOn));
+                editor.apply();
                 Intent intent = new Intent(MainActivity.this, highscoreActivity.class);
                 intent.putExtra("dbName", userName);
                 intent.putExtra("dbTime", userTime);
                 intent.putExtra("dbMaze", userMaze);
                 intent.putExtra("dbAudio", userAudio);
                 intent.putExtra("isAudioOn", String.valueOf(audioSwitchOn));
-                intent.putExtra("turnRaspberrySwitchOff", String.valueOf(raspberrySwitchOn));
                 if(raspberrySwitchOn){
                     //make sure raspberry gets the information that game is over
                     publish(pub_topic, "finished");
@@ -433,6 +419,10 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
                 raspberrySwitchOn = false;
                 connectionFailed = true;
+                SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("raspberryOff", String.valueOf(raspberrySwitchOn));
+                editor.apply();
                 Intent intent = new Intent(MainActivity.this, MainActivity.class);
                 Context context = getApplicationContext();
                 //inform user that connection failed

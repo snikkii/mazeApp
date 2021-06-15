@@ -69,7 +69,6 @@ public class menuActivity extends AppCompatActivity {
         audioGroup = findViewById(R.id.audioRadioGroup);
         mazeGroup = findViewById(R.id.mazeRadioGroup);
 
-        //TODO: Labels
         audio1 = findViewById(R.id.audio1);
         audio1.setText(R.string.aRadio1);
         audio2 = findViewById(R.id.audio2);
@@ -92,6 +91,31 @@ public class menuActivity extends AppCompatActivity {
 
         raspberrySmartphoneSwitch = findViewById(R.id.RaspberrySmartphoneSwitch);
         raspberrySwitchOn = raspberrySmartphoneSwitch.isChecked();
+        audioOnOffSwitch = findViewById(R.id.audioOffOnSwitch);
+        audioSwitchOn = audioOnOffSwitch.isChecked();
+
+        //get settings from SharedPreferences file
+        SharedPreferences sh = getSharedPreferences("game settings", MODE_PRIVATE);
+        brokerIP = sh.getString("broker", "192.168.178.36");
+        userAudio = sh.getString("userAudio", "Sound 1");
+        userName = sh.getString("userName", "player 1");
+        userMaze = sh.getString("userMaze", "maze_1.txt");
+        String audioSwitchBuffer = sh.getString("audioOn", "true");
+        if(audioSwitchBuffer.equals("false")){
+            audioSwitchOn = false;
+        } else if(audioSwitchBuffer.equals("true")){
+            audioSwitchOn = true;
+        }
+        String raspberrySwitchBuffer = sh.getString("raspberryOff", "false");
+        if(raspberrySwitchBuffer.equals("false")) {
+            raspberrySwitchOn = false;
+        } else if (raspberrySwitchBuffer.equals("true")){
+            raspberrySwitchOn = true;
+        }
+
+        editPlayerName.setHint(userName);
+        editRaspberryIP.setHint(brokerIP);
+
         raspberrySmartphoneSwitch.setChecked(raspberrySwitchOn);
         editRaspberryIP.setVisibility(View.INVISIBLE);
         raspberrySmartphoneSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -107,8 +131,6 @@ public class menuActivity extends AppCompatActivity {
                 raspberryIP.setVisibility(View.INVISIBLE);
             }
         });
-        audioOnOffSwitch = findViewById(R.id.audioOffOnSwitch);
-        audioSwitchOn = audioOnOffSwitch.isChecked();
         audioOnOffSwitch.setChecked(audioSwitchOn);
         audioOnOffSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
@@ -120,63 +142,25 @@ public class menuActivity extends AppCompatActivity {
             }
         });
 
-        //get broker-ip from shared preferences file
-        SharedPreferences sh = getSharedPreferences("IP-Address broker", MODE_PRIVATE);
-        brokerIP = sh.getString("broker", "192.168.178.36");
-
-        editRaspberryIP.setHint(brokerIP);
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) { //get settings that have been taken before
-            userName = extras.getString("nameOfUser");
-            if (TextUtils.isEmpty(userName)) {
-                userName = getResources().getString(R.string.defaultUser);
-            }
-            editPlayerName.setHint(userName);
-            String raspberrySwitchOffText = extras.getString("RaspberrySwitchOnOff");
-            if (raspberrySwitchOffText.equals("true")) {
-                raspberrySwitchOn = true;
-                raspberrySmartphoneSwitch.setChecked(raspberrySwitchOn);
-            } else if (raspberrySwitchOffText.equals("false")) {
-                raspberrySwitchOn = false;
-                raspberrySmartphoneSwitch.setChecked(raspberrySwitchOn);
-            }
-            String audioSwitchOnText = extras.getString("AudioSwitchOnOff");
-            if(audioSwitchOnText.equals("true")){
-                audioSwitchOn = true;
-                audioOnOffSwitch.setChecked(audioSwitchOn);
-            } else if(audioSwitchOnText.equals("false")){
-                audioSwitchOn = false;
-                audioOnOffSwitch.setChecked(audioSwitchOn);
-            }
-            userMaze = extras.getString("mazeOfUser");
-            if(TextUtils.isEmpty(userMaze)){
-                userMaze = getResources().getString(R.string.defaultMaze);
-            }
-            switch(userMaze){ //check radiobutton with maze that was selected before
-                case "maze_1.txt":
-                    maze1.setChecked(true);
-                    break;
-                case "maze_2.txt":
-                    maze2.setChecked(true);
-                    break;
-                case "maze_3.txt":
-                    maze3.setChecked(true);
-                    break;
-                case "maze_4.txt":
-                    maze4.setChecked(true);
-                    break;
-                case "maze_5.txt":
-                    maze5.setChecked(true);
-                    break;
-                case "maze_6.txt":
-                    maze6.setChecked(true);
-                    break;
-            }
-        }
-        userAudio = extras.getString("audioOfUser");
-        if(TextUtils.isEmpty(userAudio)){
-            userAudio = getResources().getString(R.string.aRadio1);
+        switch(userMaze){ //check radiobutton with maze that was selected before
+            case "maze_1.txt":
+                maze1.setChecked(true);
+                break;
+            case "maze_2.txt":
+                maze2.setChecked(true);
+                break;
+            case "maze_3.txt":
+                maze3.setChecked(true);
+                break;
+            case "maze_4.txt":
+                maze4.setChecked(true);
+                break;
+            case "maze_5.txt":
+                maze5.setChecked(true);
+                break;
+            case "maze_6.txt":
+                maze6.setChecked(true);
+                break;
         }
         switch(userAudio){ //check radiobutton with sound that was selected before
             case "Sound 1":
@@ -188,18 +172,18 @@ public class menuActivity extends AppCompatActivity {
         }
         saveButton = findViewById(R.id.saveSettingsButton);
         saveButton.setOnClickListener(view -> {
-            //save changes and store them in extras or shared preferences
+            //save changes and store them in SharedPreferences
             applyChanges();
-            SharedPreferences sharedPreferences = getSharedPreferences("IP-Address broker", MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("broker", brokerIP);
+            editor.putString("userAudio", userAudio);
+            editor.putString("userName", userName);
+            editor.putString("userMaze", userMaze);
+            editor.putString("audioOn", String.valueOf(audioSwitchOn));
+            editor.putString("raspberryOff", String.valueOf(raspberrySwitchOn));
             editor.apply();
             Intent intent = new Intent(menuActivity.this, MainActivity.class);
-            intent.putExtra("changesMaze", userMaze);
-            intent.putExtra("changesName", userName);
-            intent.putExtra("changesAudio", userAudio);
-            intent.putExtra("changesRaspberrySwitch", String.valueOf(raspberrySwitchOn));
-            intent.putExtra("changesAudioSwitch", String.valueOf(audioSwitchOn));
             startActivity(intent);
             finish();
         });
