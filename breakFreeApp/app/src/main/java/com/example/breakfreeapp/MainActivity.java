@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     /** Flags that are useful for the switches in settings and for the mqtt-connection
      */
     private boolean raspberrySwitchOn = false, audioSwitchOn = true,
-            connectionFailed = false;
+            connectionFailed = true;
 
     /** Objects for the maze and the ball
      */
@@ -176,8 +176,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         if(raspberrySwitchOn){ disconnect(); }
         else{
-            if(!connectionFailed) {
-                mSensorManager.unregisterListener(mBallListener);
+            if(connectionFailed) {
+                try {
+                    mSensorManager.unregisterListener(mBallListener);
+                } catch(Exception e){
+                    Log.d(TAG, e.getMessage());
+                }
             }
         }
         super.onPause();
@@ -379,11 +383,12 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("dbMaze", userMaze);
                 intent.putExtra("dbAudio", userAudio);
                 intent.putExtra("isAudioOn", String.valueOf(audioSwitchOn));
+                startActivity(intent);
                 if(raspberrySwitchOn){
                     //make sure raspberry gets the information that game is over
                     publish(pub_topic, "finished");
+                    raspberrySwitchOn = false;
                 }
-                startActivity(intent);
             }
             findViewById(R.id.highscore).setVisibility(View.VISIBLE);
             startGameBtn.setVisibility(View.VISIBLE);

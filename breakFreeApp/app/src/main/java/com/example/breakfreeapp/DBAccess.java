@@ -24,6 +24,9 @@ public class DBAccess extends SQLiteOpenHelper {
     /** Table for highscore-list
      */
     private String table;
+    /**TAG for Log.d-message when database is created
+     */
+    private final String TAG = DBAccess.class.getSimpleName();
 
     /** Construcs a DBAccess instance
      * @param activity Activity where the database should be
@@ -65,9 +68,9 @@ public class DBAccess extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db){
         try{
             db.execSQL(tableSQL);
-            Log.d("TAG", "Create database");
+            Log.d(TAG, "Create database");
         } catch(Exception ex) {
-            Log.e("TAG", ex.getMessage());
+            Log.e(TAG, ex.getMessage());
         }
     }
 

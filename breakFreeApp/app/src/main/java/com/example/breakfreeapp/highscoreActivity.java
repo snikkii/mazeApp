@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CursorAdapter;
@@ -102,6 +103,10 @@ public class highscoreActivity extends AppCompatActivity {
         if(raspberryOn.equals("true")){
             raspberryOn = "false";
         }
+        SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("raspberryOff", raspberryOn);
+        editor.apply();
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             //get information from just played game
@@ -167,10 +172,6 @@ public class highscoreActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch(id){
             case R.id.home:
-                SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("raspberryOff", raspberryOn);
-                editor.apply();
                 Intent intent = new Intent(highscoreActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();

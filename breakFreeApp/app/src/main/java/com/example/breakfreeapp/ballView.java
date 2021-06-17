@@ -92,7 +92,7 @@ public class ballView extends AppCompatImageView {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } else if(yDir < -1 && yCurr != 0 && maze[yCurr-1][xCurr] != 'w'){
+            } else if(yDir < -3 && yCurr != 0 && maze[yCurr-1][xCurr] != 'w'){
                 yCurr -= 1;
                 yPos -= cellSize;
                 try {
@@ -100,7 +100,7 @@ public class ballView extends AppCompatImageView {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } else if(yDir > 5 && yCurr+1 != 21 && maze[yCurr+1][xCurr] != 'w'){
+            } else if(yDir > 3 && yCurr+1 != 21 && maze[yCurr+1][xCurr] != 'w'){
                 yCurr += 1;
                 yPos += cellSize;
                 try {
