@@ -120,13 +120,10 @@ public class MainActivity extends AppCompatActivity {
 
         //button for highscore-list
         highscoreBtn = findViewById(R.id.highscore);
-        highscoreBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, highscoreActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        highscoreBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, highscoreActivity.class);
+            startActivity(intent);
+            finish();
         });
 
         //find views
@@ -413,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
                 //inform user that connection was successful
                 Toast toast = Toast.makeText(context,
                         "Connected with broker " + broker,
-                        Toast.LENGTH_LONG);
+                        Toast.LENGTH_SHORT);
                 toast.show();
 
             } catch (Exception e) {
@@ -428,7 +425,7 @@ public class MainActivity extends AppCompatActivity {
                 //inform user that connection failed
                 Toast toast = Toast.makeText(context,
                         "Connection with broker " + broker + " failed",
-                        Toast.LENGTH_LONG);
+                        Toast.LENGTH_SHORT);
                 toast.show();
                 startActivity(intent);
                 finish();
@@ -461,7 +458,7 @@ public class MainActivity extends AppCompatActivity {
             //inform user about the topic that the smartphone has subscribed to
             Toast toast = Toast.makeText(context,
                     "Subscribed to topic " + topic,
-                    Toast.LENGTH_LONG);
+                    Toast.LENGTH_SHORT);
             toast.show();
         } catch (MqttException e) {
             e.printStackTrace();
@@ -493,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
             //inform user about unsubscribing the topic
             Toast toast = Toast.makeText(context,
                     "Unsubscribed from topic " + sub_topic,
-                    Toast.LENGTH_LONG);
+                    Toast.LENGTH_SHORT);
             toast.show();
         } catch (MqttException e) {
             e.printStackTrace();
@@ -507,7 +504,7 @@ public class MainActivity extends AppCompatActivity {
             //inform user about successful disconnection
             Toast toast = Toast.makeText(context,
                     "Disconnected from broker",
-                    Toast.LENGTH_LONG);
+                    Toast.LENGTH_SHORT);
             toast.show();
         } catch (MqttException me) {
             Log.e(TAG, me.getMessage());
@@ -515,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
             //inform user that disconnection failed
             Toast toast = Toast.makeText(context,
                     "Disconnection failed",
-                    Toast.LENGTH_LONG);
+                    Toast.LENGTH_SHORT);
             toast.show();
         }
     }

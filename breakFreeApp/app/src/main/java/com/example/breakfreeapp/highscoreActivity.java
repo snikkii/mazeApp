@@ -121,9 +121,25 @@ public class highscoreActivity extends AppCompatActivity {
             currentPlayerID  = dbAccess.insertDataSet(dataSet);
             updateView();
             if(dbAudio.equals("Sound 2") && audioOn.equals("true")){
-                sound2.start();
+                try{
+                    sound2.start();
+                } catch(Exception e){
+                    Context context = getApplicationContext();
+                    Toast toast = Toast.makeText(context,
+                            "Problem with playing sound",
+                            Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
             } else if(dbAudio.equals("Sound 1") && audioOn.equals("true")){
-                sound1.start();
+                try {
+                    sound1.start();
+                } catch(Exception e){
+                    Context context = getApplicationContext();
+                    Toast toast = Toast.makeText(context,
+                            "Problem with playing sound",
+                            Toast.LENGTH_SHORT);
+                }
             }
         } else {
             updateView();
@@ -160,15 +176,23 @@ public class highscoreActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.deleteDB:
-                dbAccess.onUpgrade(dbAccess.getDB(), 0, 1);
-                Intent in = new Intent(highscoreActivity.this, highscoreActivity.class);
+                try{
+                    dbAccess.onUpgrade(dbAccess.getDB(), 0, 1);
+                    Intent in = new Intent(highscoreActivity.this, highscoreActivity.class);
+                    Context context = getApplicationContext();
+                    Toast toast = Toast.makeText(context,
+                            "Highscore list is deleted",
+                            Toast.LENGTH_SHORT);
+                    toast.show();
+                    startActivity(in);
+                    finish();
+                } catch(Exception e){
                 Context context = getApplicationContext();
                 Toast toast = Toast.makeText(context,
-                        "Highscore list is deleted",
-                        Toast.LENGTH_LONG);
+                        "Problem with deleting highscore list",
+                        Toast.LENGTH_SHORT);
                 toast.show();
-                startActivity(in);
-                finish();
+            }
         }
         return super.onOptionsItemSelected(item);
 
