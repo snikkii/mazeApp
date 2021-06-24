@@ -8,7 +8,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -548,6 +547,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /** New Thread for publishing so there's no blackscreen when changing activity
+     */
     Runnable runnnableDis = new Runnable() {
         @Override
         public void run() {
