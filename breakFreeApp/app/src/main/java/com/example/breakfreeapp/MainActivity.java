@@ -31,6 +31,8 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Combines the ball and the maze so the game can be played
  * @author Annika Stadelmann
@@ -194,8 +196,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         if(raspberrySwitchOn){
-            connect("tcp://" + BROKER +":1883");
-            subscribe(sub_topic);
+            String validIp = "(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])";
+            Pattern pattern = Pattern.compile(validIp);
+            Matcher matcher = pattern.matcher(BROKER);
+            Log.d("MAIN", String.valueOf(matcher.matches()));
+            if(!matcher.matches()){
+                raspberrySwitchOn = false;
+                String brokerBuffer = BROKER;
+                BROKER = "192.168.178.36";
+                SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("raspberryOff", String.valueOf(raspberrySwitchOn));
+                editor.putString("broker", BROKER);
+                editor.apply();
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                Context context = getApplicationContext();
+                //inform user that connection failed
+                Toast toast = Toast.makeText(context,
+                        brokerBuffer + " is an invalid ip-address",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+                startActivity(intent);
+                finish();
+            } else {
+                connect("tcp://" + BROKER +":1883");
+                subscribe(sub_topic);
+            }
         } else {
             mSensorManager.registerListener(mBallListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                     SensorManager.SENSOR_DELAY_NORMAL);
@@ -373,6 +399,11 @@ public class MainActivity extends AppCompatActivity {
                     mSensorManager.registerListener(mBallListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                             SensorManager.SENSOR_DELAY_NORMAL);
                 }
+                if(raspberrySwitchOn){
+                    //make sure raspberry gets the information that game is over
+                    Thread t = new Thread(runnnableDis);
+                    t.start();
+                }
                 SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("raspberryOff", String.valueOf(raspberrySwitchOn));
@@ -384,11 +415,6 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("dbAudio", userAudio);
                 intent.putExtra("isAudioOn", String.valueOf(audioSwitchOn));
                 startActivity(intent);
-                if(raspberrySwitchOn){
-                    //make sure raspberry gets the information that game is over
-                    publish(pub_topic, "finished");
-                    raspberrySwitchOn = false;
-                }
             }
             findViewById(R.id.highscore).setVisibility(View.VISIBLE);
             startGameBtn.setVisibility(View.VISIBLE);
@@ -521,4 +547,12 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
         }
     }
+
+    Runnable runnnableDis = new Runnable() {
+        @Override
+        public void run() {
+            publish(pub_topic, "finished");
+            raspberrySwitchOn = false;
+        }
+    };
 }
