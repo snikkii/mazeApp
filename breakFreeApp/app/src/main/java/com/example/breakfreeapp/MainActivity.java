@@ -400,8 +400,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(raspberrySwitchOn){
                     //make sure raspberry gets the information that game is over
-                    Thread t = new Thread(runnnableDis);
-                    t.start();
+                    publish(pub_topic, "finished");
+                    raspberrySwitchOn = false;
                 }
                 SharedPreferences sharedPreferences = getSharedPreferences("game settings", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -502,7 +502,6 @@ public class MainActivity extends AppCompatActivity {
     //publish information
     private void publish(String topic, String msg) {
         MqttMessage message = new MqttMessage(msg.getBytes());
-        message.setQos(qos);
         try {
             client.publish(topic, message);
         } catch (MqttException e) {
@@ -546,14 +545,4 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
         }
     }
-
-    /** New Thread for publishing so there's no blackscreen when changing activity
-     */
-    Runnable runnnableDis = new Runnable() {
-        @Override
-        public void run() {
-            publish(pub_topic, "finished");
-            raspberrySwitchOn = false;
-        }
-    };
 }
